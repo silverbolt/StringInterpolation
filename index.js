@@ -1,10 +1,3 @@
-/**
- * 插值模板字符串的解析
- * eg:
- *   |parseTemplate(tmpString, contenxt) // => top：23，B部：44
- *   |--tmpString = 'top：@{a.b}，B部：@{b.c}'，
- *   |--context = { a: {b:1}, b: {c:2}  }
- */
 const STATS = {
   START: 0,
   TEXT: 1,
