@@ -1,0 +1,25 @@
+{
+  "name": "string-interpolation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/silverbolt/StringInterpolation.git"
+  },
+  "keywords": [
+    "string",
+    "interpolation",
+    "template",
+    "parse"
+  ],
+  "author": "cauth.chen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/silverbolt/StringInterpolation/issues"
+  },
+  "homepage": "https://github.com/silverbolt/StringInterpolation#readme"
+}
