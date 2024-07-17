@@ -1,6 +1,10 @@
 # StringInterpolation
-eg:
-  parseString(tmpString, contenxt)
-    |--tmpString = 'part1：${a.v}，part2：@{b.v}'，
-    |--context = { a: {v:1}, b: {v:2}  }
-  | output: "part1：1，part2：2"
+```js
+const obj = {
+  v1: 'Life',
+  v2: 'chocolate.'
+}
+const sentences = parseTemplate('${obj.var1} is like ${obj.var2}')
+console.log(sentences) // output: Life is like chocolate.
+```
+
