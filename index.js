@@ -1,113 +1,126 @@
-const STATS = {
-  START: 0,
-  TEXT: 1,
-  VAR_START: 2
-}
+/** MIT License **/
+(function () {
+  "use strict";
 
-function moveCursorTo(s, cursor, targetChar) {
-  let value = ''
-  while (s[cursor] !== targetChar && cursor < s.length) {
-    value += s[cursor]
-    cursor++
+  const STATS = {
+    START: 0,
+    TEXT: 1,
+    VAR_START: 2,
+  };
+
+  function moveCursorTo(s, cursor, targetChar) {
+    let value = "";
+    while (s[cursor] !== targetChar && cursor < s.length) {
+      value += s[cursor];
+      cursor++;
+    }
+    return { value, nextCursor: cursor };
   }
-  return { value, nextCursor: cursor }
-}
 
-/**
- * extra tokens, a token like：{ type: 'var', value: 'a.b' }
- * @param {*} tmpStr
- * @param {*} signChar
- * @returns
- */
-function extraTokens(tmpStr, signChar = '$') {
-  const strSegments = []
-  const size = tmpStr.length
+  /**
+   * extra tokens, a token like：{ type: 'var', value: 'a.b' }
+   * @param {*} tmpStr
+   * @param {*} signChar
+   * @returns
+   */
+  function extraTokens(tmpStr, signChar = "$") {
+    const strSegments = [];
+    const size = tmpStr.length;
 
-  let state = STATS.BEFORE,
-    cursor = 0
+    let state = STATS.BEFORE,
+      cursor = 0;
 
-  while (cursor < size) {
-    const c = tmpStr[cursor]
-    switch (state) {
-      case STATS.TEXT:
-        const txtInfo = moveCursorTo(tmpStr, cursor, signChar)
-        strSegments.push({ type: 'text', value: txtInfo.value })
-        cursor = txtInfo.nextCursor + 1
-        state = STATS.VAR_START
-        break
-      case STATS.BEFORE:
-        if (c === signChar) {
-          state = STATS.VAR_START
-          cursor++
-        } else {
-          state = STATS.TEXT
-        }
-        break
-      case STATS.VAR_START:
-        if (c === '{') {
-          cursor++
-          const varInfo = moveCursorTo(tmpStr, cursor, '}')
-          if (varInfo.nextCursor < size) {
-            strSegments.push({ type: 'var', value: varInfo.value })
-            cursor = varInfo.nextCursor + 1
-            state = STATS.BEFORE
+    while (cursor < size) {
+      const c = tmpStr[cursor];
+      switch (state) {
+        case STATS.TEXT:
+          const txtInfo = moveCursorTo(tmpStr, cursor, signChar);
+          strSegments.push({ type: "text", value: txtInfo.value });
+          cursor = txtInfo.nextCursor + 1;
+          state = STATS.VAR_START;
+          break;
+        case STATS.BEFORE:
+          if (c === signChar) {
+            state = STATS.VAR_START;
+            cursor++;
           } else {
-            strSegments.push({ type: 'text', value: '${' + varInfo.value })
-            cursor = varInfo.nextCursor
-            break
+            state = STATS.TEXT;
           }
-        } else {
-          state = STATS.TEXT
-        }
-        break
-      default:
-        break
-    }
-  }
-  return strSegments
-}
-
-/**
- * do interpolations
- * @param {String} keyChain
- * @param {Object} context
- * @returns String
- */
-function doInterpolations(keyChain, context) {
-  const keys = keyChain.split('.')
-  let val = context
-  for (let i = 0; i < keys.length; i++) {
-    if (val[keys[i]] !== undefined) {
-      val = val[keys[i]]
-    } else {
-      val = ''
-      break
-    }
-  }
-  return val
-}
-
-/**
- * string interpolation replacement
- * @param {String} s
- * @param {Object} context
- * @returns String
- */
-function parseTemplate(s, context) {
-  const strSegments = extraTokens(s)
-
-  return strSegments
-    .map((tag) => {
-      if (tag.type === 'var') {
-        return doInterpolations(tag.value, context)
+          break;
+        case STATS.VAR_START:
+          if (c === "{") {
+            cursor++;
+            const varInfo = moveCursorTo(tmpStr, cursor, "}");
+            if (varInfo.nextCursor < size) {
+              strSegments.push({ type: "var", value: varInfo.value });
+              cursor = varInfo.nextCursor + 1;
+              state = STATS.BEFORE;
+            } else {
+              strSegments.push({ type: "text", value: "${" + varInfo.value });
+              cursor = varInfo.nextCursor;
+              break;
+            }
+          } else {
+            state = STATS.TEXT;
+          }
+          break;
+        default:
+          break;
       }
-      return tag.value
-    })
-    .join('')
-}
+    }
+    return strSegments;
+  }
 
-module.exports = {
-  extraTokens,
-  doInterpolations,
-  parseTemplate
-}
+  /**
+   * do interpolations
+   * @param {String} keyChain
+   * @param {Object} context
+   * @returns String
+   */
+  function doInterpolations(keyChain, context) {
+    const keys = keyChain.split(".");
+    let val = context;
+    for (let i = 0; i < keys.length; i++) {
+      if (val[keys[i]] !== undefined) {
+        val = val[keys[i]];
+      } else {
+        val = "";
+        break;
+      }
+    }
+    return val;
+  }
+
+  /**
+   * string interpolation replacement
+   * @param {String} s
+   * @param {Object} context
+   * @returns String
+   */
+  function parseTemplate(s, context) {
+    const strSegments = extraTokens(s);
+
+    return strSegments
+      .map((tag) => {
+        if (tag.type === "var") {
+          return doInterpolations(tag.value, context);
+        }
+        return tag.value;
+      })
+      .join("");
+  }
+
+  const StrInterpolation = {
+    extraTokens,
+    doInterpolations,
+    parseTemplate,
+  };
+
+  if (typeof window !== "undefined") {
+    if (!window.StrInterpolation) {
+      window.StrInterpolation = StrInterpolation;
+    }
+  } else {
+    module.exports = StrInterpolation;
+  }
+})();
