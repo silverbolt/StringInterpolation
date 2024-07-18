@@ -23,6 +23,6 @@ const sentences = SI.parseTemplate(strTemp, context)
 console.log(sentences) // output: Life is like chocolate.
 
 // method2 extraTokens
-const strSegments = extraTokens(strTemp);
+const strSegments = SI.extraTokens(strTemp);
 console.log(strSegments) // output: [{ type: "var", value: "v1" }, { type: "text", value: " is like " }, { type: "var", value: "v2.v3" }]
 ```
