@@ -1,7 +1,7 @@
 StringInterpolation JS
 ===
 
-A high performance string interpolation library for JavaScript/NodeJS.
+A high performance string interpolation library for JavaScript/NodeJS.  
 It used Finite State Machine (FSM) to process strings instead of Regular Expression, resulting in better performance.
 
 ## How to use
